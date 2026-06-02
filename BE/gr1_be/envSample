@@ -1,0 +1,2 @@
+MONGODB_URI=mongodb+srv://lhvinh2003_db_user:lTScyARBa8FbiR7B@jlpt-web-db.puzxbbm.mongodb.net/jlpt-learning
+JWT_SECRET=my_super_secret_key
