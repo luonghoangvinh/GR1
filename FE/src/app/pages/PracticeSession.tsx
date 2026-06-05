@@ -141,7 +141,6 @@ export function PracticeSession() {
     }
     try {
       if (!exercise.completed) {
-        //const res = await createNewExProgress(exerciseProgress);
         const res = await createNewExProgress(exerciseProgress);
       } else {
         const res = await updateExProgress(exercise.progressId ? exercise.progressId : '', exerciseProgress);
@@ -222,7 +221,9 @@ export function PracticeSession() {
         {/* Question */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <div className="mb-6">
+            {currentQuestion.readingContent&&(<p className='text-xl mb-8'>{currentQuestion.readingContent}</p>)}
             <div className="flex items-center gap-2 mb-3">
+              
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                 {currentQuestion.level}
               </span>

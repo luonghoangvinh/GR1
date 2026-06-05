@@ -17,6 +17,7 @@ export interface Question {
   level: JLPTLevel;
   audioURL?: string; // For listening questions
   imageURL?: string; // For vocabulary,reading questions
+  readingContent?: string;
   question: string;
   options: string[];
   correctAnswer: number;
