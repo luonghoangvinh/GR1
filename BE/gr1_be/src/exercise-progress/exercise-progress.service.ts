@@ -16,23 +16,28 @@ export class ExerciseProgressService {
         private readonly progressModel:
             Model<ExerciseProgress>,
     ) { }
-
-    async findByUserId(userId: string) {
-        return this.progressModel.find({userId: new Types.ObjectId(userId) }).exec();
-    }
-    async create(
-        dto: CreateExerciseProgressDto,
-    ) {
-        return this.progressModel.create(dto);
-    }
-
     async findAll() {
         return this.progressModel.find().exec();
     }
 
+    async findByUserId(userId: string) {
+        return this.progressModel.find({ userId: new Types.ObjectId(userId) }).exec();
+    }
+
+
+    async create(
+        dto: CreateExerciseProgressDto,
+    ) {
+        return this.progressModel.create({
+            ...dto,
+            userId: new Types.ObjectId(dto.userId),
+            exerciseId: new Types.ObjectId(dto.exerciseId),
+        });
+    }
+
     async findById(id: string) {
         const progress =
-            await this.progressModel.findById(id);
+            await this.progressModel.findById({ _id: new Types.ObjectId(id) });
 
         if (!progress) {
             throw new NotFoundException(
@@ -48,10 +53,16 @@ export class ExerciseProgressService {
         dto: UpdateExerciseProgressDto,
     ) {
         const progress =
-            await this.progressModel.findByIdAndUpdate(
-                id,
-                dto,
-                { new: true },
+            await this.progressModel.findOneAndUpdate(
+                { _id: new Types.ObjectId(id) },
+                {
+                    ...dto,
+                    userId: dto.userId ? new Types.ObjectId(dto.userId) : undefined,
+                    exerciseId: dto.exerciseId ? new Types.ObjectId(dto.exerciseId) : undefined,
+                },
+                {
+                    returnDocument: 'before'
+                }
             );
 
         if (!progress) {
@@ -65,7 +76,7 @@ export class ExerciseProgressService {
 
     async delete(id: string) {
         const progress =
-            await this.progressModel.findByIdAndDelete(id);
+            await this.progressModel.findByIdAndDelete({ _id: new Types.ObjectId(id) });
 
         if (!progress) {
             throw new NotFoundException(

@@ -3,7 +3,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Deck } from './deck.entity';
 import { CreateDeckDto } from './dto/create-deck.dto';
@@ -25,7 +25,7 @@ export class DeckService {
     }
 
     async findById(id: string) {
-        const deck = await this.deckModel.findById(id);
+        const deck = await this.deckModel.findById({_id: new Types.ObjectId(id)});
 
         if (!deck) {
             throw new NotFoundException('Deck not found');
@@ -40,7 +40,7 @@ export class DeckService {
     ) {
         const deck =
             await this.deckModel.findByIdAndUpdate(
-                id,
+                {_id: new Types.ObjectId(id)},
                 dto,
                 { new: true },
             );
@@ -54,7 +54,7 @@ export class DeckService {
 
     async delete(id: string) {
         const deck =
-            await this.deckModel.findByIdAndDelete(id);
+            await this.deckModel.findByIdAndDelete({_id: new Types.ObjectId(id)});
 
         if (!deck) {
             throw new NotFoundException('Deck not found');

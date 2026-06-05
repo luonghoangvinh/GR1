@@ -38,18 +38,29 @@ export class ExerciseController {
     ) {
         return this.exerciseService.getExercises(userId, level, type);
     }
-    @Get(':id')
-    findById(
-        @Param('id') id: string,
+
+    @Get('ByUserIandId')
+    findByUserIandId(
+        @Query('userId') userId: string,
+        @Query('id') id: string,
     ) {
-        return this.exerciseService.findById(id);
-    }
+        return this.exerciseService.findByUserIdAndId(userId,id);
+    }    
     @Get(':id/questions')
     getQuestionsByExerciseId(
         @Param('id') exerciseId: string,
     ) {
         return this.exerciseService.getQuestionsByExerciseId(exerciseId);
     }
+    @Get(':id')
+    findById(
+        //@Query('userId') userId: string,
+        @Param('id') id: string,
+    ) {
+        return this.exerciseService.findById(id);
+    }
+
+    
 
     @Patch(':id')
     update(

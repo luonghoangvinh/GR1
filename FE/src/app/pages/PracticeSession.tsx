@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, XCircle, Clock, Flag } from 'lucide-react';
-import { Question, JLPTLevel, QuestionType } from '../types';
+import { Question, JLPTLevel, QuestionType, ExerciseProgress } from '../types';
 import { getQuestionsByType } from '../data/mockData';
 import { Exercise, getExerciseById, getExercisesQuestion } from '../data/exercises';
 import { saveUserAnswer } from '../utils/storage';
+import createNewExProgress, { updateExProgress } from '../api/exProgress';
 
 export function PracticeSession() {
   const { exerciseId } = useParams<{ exerciseId: string }>();
@@ -21,10 +22,12 @@ export function PracticeSession() {
 
 
   const [correctCount, setCorrectCount] = useState(0);
-
+  const userStr = localStorage.getItem('user');
+  const userData = userStr ? JSON.parse(userStr) : null;
+  const userId = userData ? userData.id : null;
   const loadExercise = async () => {
     if (exerciseId) {
-      const data = await getExerciseById(exerciseId);
+      const data = await getExerciseById(userId,exerciseId);
       setExercise(data);
     }
   };
@@ -36,8 +39,6 @@ export function PracticeSession() {
   useEffect(() => {
     if (exercise) {
 
-      //const qs = getQuestionsByType(exercise.type, exercise.level);
-      // Take only the number of questions needed
       const getQuestions = async (exerciseId: string) => {
         try {
           const questions = await getExercisesQuestion(exerciseId);
@@ -48,7 +49,7 @@ export function PracticeSession() {
           setQuestions([]);
         }
       }
-      getQuestions(exercise._id);
+      getQuestions(exerciseId? exerciseId : '');
     }
   }, [exercise]);
 
@@ -125,9 +126,30 @@ export function PracticeSession() {
     }
   };
 
-  const handleFinish = () => {
-    const score = Math.round((correctCount / exercise.questionCount) * 100);
-    navigate(`/practice-result/${exerciseId}?score=${score}`);
+  const handleFinish = async () => {
+    let exerciseProgress: any = {};
+
+    const exScore = Math.round((correctCount / exercise.questionCount) * 100);
+    if (userId) {
+      exerciseProgress = {
+        userId: userId,
+        exerciseId: exerciseId,
+        totalQuestion: exercise.questionCount,
+        rightAnswer: correctCount,
+        score: exScore
+      };
+    }
+    try {
+      if (!exercise.completed) {
+        //const res = await createNewExProgress(exerciseProgress);
+        const res = await updateExProgress(exercise.progressId ? exercise.progressId : '', exerciseProgress);
+      } else {
+        const res = await updateExProgress(exercise.progressId ? exercise.progressId : '', exerciseProgress);
+      }
+      navigate(`/practice-result/${exerciseId}?score=${exScore}`);
+    } catch (error) {
+      console.error('Error saving exercise progress:', error);
+    }
   };
 
   if (questions.length === 0) {
@@ -184,12 +206,12 @@ export function PracticeSession() {
                 <div
                   key={index}
                   className={`flex-1 h-2 rounded-full transition-all ${index < currentQuestionIndex
-                      ? answers[index]
-                        ? 'bg-green-500'
-                        : 'bg-red-500'
-                      : index === currentQuestionIndex
-                        ? 'bg-blue-500'
-                        : 'bg-gray-200'
+                    ? answers[index]
+                      ? 'bg-green-500'
+                      : 'bg-red-500'
+                    : index === currentQuestionIndex
+                      ? 'bg-blue-500'
+                      : 'bg-gray-200'
                     }`}
                 ></div>
               ))}
@@ -228,12 +250,12 @@ export function PracticeSession() {
                   onClick={() => handleAnswerSelect(index)}
                   disabled={showResult}
                   className={`w-full p-4 rounded-lg border-2 text-left transition-all ${showCorrect
-                      ? 'border-green-500 bg-green-50'
-                      : showIncorrect
-                        ? 'border-red-500 bg-red-50'
-                        : isSelected
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-green-500 bg-green-50'
+                    : showIncorrect
+                      ? 'border-red-500 bg-red-50'
+                      : isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
                     }`}
                 >
                   <div className="flex items-center justify-between">

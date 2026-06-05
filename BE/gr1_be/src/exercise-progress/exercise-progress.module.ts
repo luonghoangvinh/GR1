@@ -5,7 +5,7 @@ import {
     ExerciseProgress,
     ExerciseProgressSchema,
 } from './exercise-progress.entity';
-import { ExerciseProgressController } from './exercisr-progress.controller';
+import { ExerciseProgressController } from './exercise-progress.controller';
 import { ExerciseProgressService } from './exercise-progress.service';
 
 @Module({

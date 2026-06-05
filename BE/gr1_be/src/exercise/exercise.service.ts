@@ -10,6 +10,7 @@ import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { Question } from '../question/question.entity';
 import { ExerciseProgress } from '../exercise-progress/exercise-progress.entity';
+import { types } from 'util';
 
 @Injectable()
 export class ExerciseService {
@@ -36,14 +37,35 @@ export class ExerciseService {
     async findById(id: string) {
         const exercise =
             await this.exerciseModel.findById(id);
-
+        //const userProgress = await this.exerciseProgressModel.find({ userId: new Types.ObjectId(userId) });
         if (!exercise) {
             throw new NotFoundException(
                 'Exercise not found',
             );
         }
 
+        /*return {
+            ...exercise,
+            completed: userProgress.some(p => p.exerciseId.equals(exercise._id)),
+            progressId: userProgress.find(p => p.exerciseId.equals(exercise._id))?._id??""
+        };*/
         return exercise;
+    }
+
+    async findByUserIdAndId(userId: string,id: string) {
+        const exercise = await this.exerciseModel.findById(id);
+        const userProgress = await this.exerciseProgressModel.find({ userId: new Types.ObjectId(userId) });
+        if (!exercise) {
+            throw new NotFoundException(
+                'Exercise not found',
+            );
+        }
+
+        return {
+            ...exercise.toObject(),
+            completed: userProgress.some(p => p.exerciseId.equals(exercise._id)),
+            progressId: userProgress.find(p => p.exerciseId.equals(exercise._id))?._id??""
+        };
     }
 
     async update(
@@ -52,7 +74,7 @@ export class ExerciseService {
     ) {
         const exercise =
             await this.exerciseModel.findByIdAndUpdate(
-                id,
+                { _id: new Types.ObjectId(id) },
                 dto,
                 { new: true },
             );
@@ -68,7 +90,7 @@ export class ExerciseService {
 
     async delete(id: string) {
         const exercise =
-            await this.exerciseModel.findByIdAndDelete(id);
+            await this.exerciseModel.findByIdAndDelete({ _id: new Types.ObjectId(id) });
 
         if (!exercise) {
             throw new NotFoundException(
@@ -81,11 +103,11 @@ export class ExerciseService {
 
 
     async getExercises(
-        userId?:string,
+        userId?: string,
         level?: string,
         type?: string,
     ) {
-        let userProgress:ExerciseProgress[] = [];
+        let userProgress: ExerciseProgress[] = [];
         const filter: any = {};
 
         if (level) {
@@ -95,16 +117,17 @@ export class ExerciseService {
         if (type) {
             filter.type = type;
         }
-        if(userId){
-        userProgress= await this.exerciseProgressModel.find({ userId: new Types.ObjectId(userId) });
+        if (userId) {
+            userProgress = await this.exerciseProgressModel.find({ userId: new Types.ObjectId(userId) });
         }
-        
+
         const exercises = await this.exerciseModel.find(filter);
-        
-        return exercises.map(ex=>({
+
+        return exercises.map(ex => ({
             ...ex.toObject(),
             completed: userProgress.some(p => p.exerciseId.equals(ex._id)),
-            score: userProgress.find(p => p.exerciseId.equals(ex._id))?.score ?? 0
+            score: userProgress.find(p => p.exerciseId.equals(ex._id))?.score ?? 0,
+            progressId: userProgress.find(p => p.exerciseId.equals(ex._id))?._id ?? ""
         }));
     }
     async getQuestionsByExerciseId(exerciseId: string) {

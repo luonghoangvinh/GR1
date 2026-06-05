@@ -3,7 +3,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Question } from './question.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -26,7 +26,7 @@ export class QuestionService {
 
     async findById(id: string) {
         const question =
-            await this.questionModel.findById(id);
+            await this.questionModel.findById({_id: new Types.ObjectId(id)});
 
         if (!question) {
             throw new NotFoundException(
@@ -43,7 +43,7 @@ export class QuestionService {
     ) {
         const question =
             await this.questionModel.findByIdAndUpdate(
-                id,
+                {_id: new Types.ObjectId(id)},
                 dto,
                 { new: true },
             );
@@ -59,7 +59,7 @@ export class QuestionService {
 
     async delete(id: string) {
         const question =
-            await this.questionModel.findByIdAndDelete(id);
+            await this.questionModel.findByIdAndDelete({_id: new Types.ObjectId(id)});
 
         if (!question) {
             throw new NotFoundException(

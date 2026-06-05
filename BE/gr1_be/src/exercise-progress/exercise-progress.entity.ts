@@ -2,9 +2,11 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from 'mongoose';
 import { User } from '../user/user.entity';
 import { Exercise } from '../exercise/exercise.entity';
+import { timestamp } from "rxjs";
 
-@Schema()
+@Schema({ timestamps: true })
 export class ExerciseProgress {
+  _id!: Types.ObjectId;
   @Prop({
     type: Types.ObjectId,
     ref: User.name,

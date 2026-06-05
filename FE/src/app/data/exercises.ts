@@ -14,6 +14,7 @@ export interface Exercise {
   difficulty: 'easy' | 'medium' | 'hard';
   completed: boolean;
   score?: number;
+  progressId?: string;
 }
 
 // Generate mock exercises
@@ -22,29 +23,6 @@ export const generateExercises = (): Exercise[] => {
 
   const types: QuestionType[] = ['vocabulary', 'grammar', 'listening', 'reading'];
   const levels: JLPTLevel[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
-
-  types.forEach(type => {
-    levels.forEach(level => {
-      // Add 5-8 exercises per type and level
-      const count = 5 + Math.floor(Math.random() * 4);
-      for (let i = 1; i <= count; i++) {
-        const difficulty = i <= 2 ? 'easy' : i <= 4 ? 'medium' : 'hard';
-        exercises.push({
-          _id: `${type}-${level}-${i}`,
-          title: `${getTypeName(type)} ${level} - Bài ${i}`,
-          description: getExerciseDescription(type, level, i),
-          type,
-          level,
-          questionCount: 10 + i * 5,
-          timeLimit: 10 + i * 5,
-          difficulty,
-          completed: Math.random() > 0.7,
-          score: Math.random() > 0.7 ? Math.floor(60 + Math.random() * 40) : undefined
-        });
-      }
-    });
-  });
 
   return exercises;
 };
@@ -100,7 +78,6 @@ function getExerciseDescription(type: QuestionType, level: JLPTLevel, num: numbe
   return descriptions[type][(num - 1) % descriptions[type].length];
 }
 
-export const allExercises = generateExercises();
 
 export function getExercisesByTypeAndLevel(userId: string, type: QuestionType, level: JLPTLevel){
   const getExercises = async (type: QuestionType, level: JLPTLevel) => {
@@ -118,9 +95,10 @@ export function getExercisesByTypeAndLevel(userId: string, type: QuestionType, l
 
 
 
-export async function getExerciseById(id: string): Promise<Exercise | undefined> {
+export async function getExerciseById(userId: string, id: string): Promise<Exercise | undefined> {
   try{
-    const exercise = await fetch(`/api/exercises/${id}`);
+    //const exercise = await fetch(`/api/exercises/${id}?userId=${userId}`);
+    const exercise = await fetch(`/api/exercises/ByUserIandId?id=${id}&userId=${userId}`);
     const data: Exercise = await exercise.json();
     return data;
   } catch (error) {

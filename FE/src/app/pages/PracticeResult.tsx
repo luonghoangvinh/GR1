@@ -9,10 +9,13 @@ export function PracticeResult() {
   const score = parseInt(searchParams.get('score') || '0');
   const [exercise, setExercise] = useState<Exercise | undefined>(undefined);
 
+  const userStr = localStorage.getItem('user');
+  const userData = userStr ? JSON.parse(userStr) : null;
+  const userId = userData ? userData.id : null;
   useEffect(() => {
     const loadExercise = async () => {
       if (exerciseId) {
-        const data = await getExerciseById(exerciseId);
+        const data = await getExerciseById(userId, exerciseId);
         setExercise(data);
       }
     };
@@ -66,7 +69,7 @@ export function PracticeResult() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-2 shadow-sm border border-gray-200 mb-4">
-            
+
             <span className="font-bold text-gray-900">JLPT Study</span>
           </div>
         </div>
@@ -77,7 +80,7 @@ export function PracticeResult() {
             <div className="text-6xl mb-4">{scoreInfo.emoji}</div>
             <h2 className="text-3xl font-bold mb-2">{scoreInfo.title}</h2>
             <p className="text-white/90 mb-6">{scoreInfo.message}</p>
-            
+
             {/* Score circle */}
             <div className="relative inline-flex items-center justify-center mb-6">
               <svg className="size-40" viewBox="0 0 160 160">
@@ -160,7 +163,7 @@ export function PracticeResult() {
             <TrendingUp className="size-5 text-purple-600" />
             Phân tích kết quả
           </h3>
-          
+
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -168,7 +171,7 @@ export function PracticeResult() {
                 <span className={`text-sm font-bold ${getScoreColor(score)}`}>{score}%</span>
               </div>
               <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full bg-gradient-to-r ${getScoreBg(score)} rounded-full transition-all duration-1000`}
                   style={{ width: `${score}%` }}
                 ></div>
@@ -251,7 +254,7 @@ export function PracticeResult() {
           </Link>
         </div>
 
-        
+
       </div>
     </div>
   );

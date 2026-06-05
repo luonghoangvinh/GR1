@@ -78,3 +78,20 @@ export interface QuestionCategory {
   icon: string;
   color: string;
 }
+export interface ExerciseProgress{
+
+
+  userId: String;
+
+  exerciseId: String;
+
+  completeAt: Date;
+
+  score: number;
+
+  
+  totalQuestion: number;
+
+  rightAnswer: number;
+
+}

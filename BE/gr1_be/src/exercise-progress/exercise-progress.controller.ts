@@ -11,6 +11,7 @@ import {
 import { ExerciseProgressService } from './exercise-progress.service';
 import { CreateExerciseProgressDto } from './dto/create-exercise-progress.dto';
 import { UpdateExerciseProgressDto } from './dto/update-exercise-progress.dto';
+import { Types } from 'mongoose';
 
 @Controller('exercise-progress')
 export class ExerciseProgressController {
