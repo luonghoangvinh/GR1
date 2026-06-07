@@ -20,11 +20,17 @@ export function Home() {
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showJLPTTestModal, setShowJLPTTestModal] = useState(false);
   
+  const userStr = localStorage.getItem('user');
+  const userData = userStr ? JSON.parse(userStr) : null;
+  const userId = userData ? userData.id : null;
+  
   useEffect(() => {
-    const answers = getUserAnswers();
+    const getAnswers= async ()=>{
+    const res = await getUserAnswers(userId);
+    const answers=res.json();
     const progressStats = calculateProgressStats(answers);
     const total = answers.length;
-    const correct = answers.filter(a => a.isCorrect).length;
+    const correct = answers.filter((a: { isCorrect: any; }) => a.isCorrect).length;
     const accuracy = total > 0 ? (correct / total) * 100 : 0;
     
     setStats(prev => ({
@@ -32,6 +38,7 @@ export function Home() {
       totalQuestions: total,
       accuracy
     }));
+  }
   }, []);
   
   const quickStats = [

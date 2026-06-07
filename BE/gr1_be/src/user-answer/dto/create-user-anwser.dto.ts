@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import {
     IsBoolean,
+    IsDate,
     IsMongoId,
     IsNumber,
     IsString,
@@ -24,4 +26,8 @@ export class CreateUserAnswerDto {
     @IsNumber()
     @Min(0)
     timeSpent?: number;
+
+    @Type(() => Date)
+    @IsDate()
+    answeredAt?: Date;
 }

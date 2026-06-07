@@ -6,6 +6,7 @@ import { getActivityByDate, getExercisesForDate, generateMockActivityData } from
 import { ProgressStats } from '../types';
 import { ActivityCalendar } from '../components/ActivityCalendar';
 import { DayActivityDetail } from '../components/DayActivityDetail';
+import { data } from 'react-router-dom';
 
 export function Progress() {
   const [stats, setStats] = useState<ProgressStats[]>([]);
@@ -13,40 +14,47 @@ export function Progress() {
   const [overallAccuracy, setOverallAccuracy] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
   const [showCalendar, setShowCalendar] = useState(false);
-  
+
+  const userStr = localStorage.getItem('user');
+  const userData = userStr ? JSON.parse(userStr) : null;
+  const userId = userData ? userData.id : null;
   useEffect(() => {
     // Get real answers or use mock data for demo
-    let answers = getUserAnswers();
-    
-    // If no real data, use mock data for demonstration
-    if (answers.length === 0) {
-      answers = generateMockActivityData();
+    const getAnswers = async () => {
+      const res = await getUserAnswers(userId);
+      const answers =await res.json();
+
+      // If no real data, use mock data for demonstration
+      /*if (answers.length === 0) {
+        answers = generateMockActivityData();
+      }*/
+
+      const calculatedStats = calculateProgressStats(answers);
+      setStats(calculatedStats);
+
+      const total = answers.length;
+      const correct = answers.filter((a: { isCorrect: any; }) => a.isCorrect).length;
+      setTotalQuestions(total);
+      setOverallAccuracy(total > 0 ? (correct / total) * 100 : 0);
     }
-    
-    const calculatedStats = calculateProgressStats(answers);
-    setStats(calculatedStats);
-    
-    const total = answers.length;
-    const correct = answers.filter(a => a.isCorrect).length;
-    setTotalQuestions(total);
-    setOverallAccuracy(total > 0 ? (correct / total) * 100 : 0);
+    getAnswers();
   }, []);
-  
+
   const handleDayClick = (date: string) => {
     setSelectedDate(date);
   };
-  
-  const activities = getActivityByDate(
-    getUserAnswers().length > 0 ? getUserAnswers() : generateMockActivityData()
+
+  /*const activities = getActivityByDate(
+    getUserAnswers(userId).length > 0 ? getUserAnswers(userId) : generateMockActivityData()
   );
-  
-  const selectedDayExercises = selectedDate 
+
+  const selectedDayExercises = selectedDate
     ? getExercisesForDate(
-        getUserAnswers().length > 0 ? getUserAnswers() : generateMockActivityData(),
-        selectedDate
-      )
-    : [];
-  
+      getUserAnswers().length > 0 ? getUserAnswers() : generateMockActivityData(),
+      selectedDate
+    )
+    : [];*/
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -56,7 +64,7 @@ export function Progress() {
           <p className="text-sm text-gray-600 mt-1">Theo dõi kết quả và phân tích điểm mạnh/yếu</p>
         </div>
 
-        
+
         {/* phần này cần phải xem lại, nếu còn thời gian phát triển thì làm sau
         <button
           onClick={() => setShowCalendar(!showCalendar)}
@@ -70,7 +78,7 @@ export function Progress() {
           {showCalendar ? 'Ẩn lịch' : 'Xem lịch'}
         </button> */}
       </div>
-      
+
       {/* Overall stats */}
       <div className="grid md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -81,7 +89,7 @@ export function Progress() {
           <div className="text-3xl font-bold text-gray-900">{totalQuestions}</div>
           <div className="text-xs text-gray-500 mt-1">Đã hoàn thành</div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Độ chính xác</span>
@@ -96,14 +104,14 @@ export function Progress() {
           </div>
           <div className="text-xs text-gray-500 mt-1">Trung bình</div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Thời gian TB</span>
             <Clock className="size-5 text-purple-600" />
           </div>
           <div className="text-3xl font-bold text-gray-900">
-            {stats.length > 0 
+            {stats.length > 0
               ? (stats.reduce((sum, s) => sum + s.averageTime, 0) / stats.filter(s => s.total > 0).length).toFixed(1)
               : '0'
             }s
@@ -111,7 +119,7 @@ export function Progress() {
           <div className="text-xs text-gray-500 mt-1">Mỗi câu hỏi</div>
         </div>
       </div>
-      
+
       {/* Stats by type */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Phân tích theo dạng bài</h3>
@@ -124,7 +132,7 @@ export function Progress() {
                   {stat.accuracy.toFixed(1)}%
                 </span>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-3">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900">{stat.total}</div>
@@ -139,15 +147,15 @@ export function Progress() {
                   <div className="text-xs text-gray-500">Sai</div>
                 </div>
               </div>
-              
+
               {/* Progress bar */}
               <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-green-500 rounded-full transition-all duration-300"
                   style={{ width: `${stat.accuracy}%` }}
                 />
               </div>
-              
+
               <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                 <span>Thời gian TB: {stat.averageTime.toFixed(1)}s</span>
                 {stat.accuracy >= 80 ? (
@@ -160,7 +168,7 @@ export function Progress() {
               </div>
             </div>
           ))}
-          
+
           {stats.every(s => s.total === 0) && (
             <div className="text-center py-8">
               <div className="text-4xl mb-4">📊</div>
@@ -170,7 +178,7 @@ export function Progress() {
           )}
         </div>
       </div>
-      
+
       {/* Recommendations */}
       {/*<div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -194,8 +202,9 @@ export function Progress() {
         </ul>
       </div>
       */}
-      
+
       {/* Activity Calendar */}
+      {/*
       {showCalendar && (
         <div className="mt-6">
           <ActivityCalendar
@@ -204,17 +213,19 @@ export function Progress() {
             selectedDate={selectedDate}
           />
         </div>
-      )}
-      
+      )} */}
+
       {/* Day Activity Detail */}
+      {/*}
       {selectedDate && (
         <div className="mt-6">
           <DayActivityDetail
             date={selectedDate}
             exercises={selectedDayExercises}
           />
-        </div>
-      )}
+        </div> 
+      )}*/}
+
     </div>
   );
 }

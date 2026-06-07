@@ -27,7 +27,7 @@ export function PracticeSession() {
   const userId = userData ? userData.id : null;
   const loadExercise = async () => {
     if (exerciseId) {
-      const data = await getExerciseById(userId,exerciseId);
+      const data = await getExerciseById(userId, exerciseId);
       setExercise(data);
     }
   };
@@ -49,7 +49,7 @@ export function PracticeSession() {
           setQuestions([]);
         }
       }
-      getQuestions(exerciseId? exerciseId : '');
+      getQuestions(exerciseId ? exerciseId : '');
     }
   }, [exercise]);
 
@@ -106,7 +106,7 @@ export function PracticeSession() {
       level: currentQuestion.level,
       isCorrect,
       timeSpent,
-      answeredAt: new Date()
+      answeredAt: new Date(Date.now())
     });
 
     // Store answer
@@ -222,11 +222,11 @@ export function PracticeSession() {
         {/* Question */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <div className="mb-6">
-            <div className='flex w-full  justify-center'>{currentQuestion.imageURL&&(<img src={currentQuestion.imageURL} alt='Ảnh JLPT'/>)}</div>
-            
-            {currentQuestion.readingContent&&(<p className='text-xl mb-8'>{currentQuestion.readingContent}</p>)}
+            <div className='flex w-full  justify-center'>{currentQuestion.imageURL && (<img src={currentQuestion.imageURL} alt='Ảnh JLPT' />)}</div>
+
+            {currentQuestion.readingContent && (<p className='text-xl mb-8'>{currentQuestion.readingContent}</p>)}
             <div className="flex items-center gap-2 mb-3">
-              
+
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                 {currentQuestion.level}
               </span>

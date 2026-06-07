@@ -5,7 +5,6 @@ const STORAGE_KEYS = {
   CUSTOM_DECKS: 'jlpt_custom_decks',
   SAVED_CARDS: 'jlpt_saved_cards'
 };
-
 // User answers storage
 export async function saveUserAnswer(answer: UserAnswer) {
   try{
@@ -25,16 +24,23 @@ export async function saveUserAnswer(answer: UserAnswer) {
   //localStorage.setItem(STORAGE_KEYS.USER_ANSWERS, JSON.stringify(answers));
 }
 
-export function getUserAnswers(): UserAnswer[] {
-  const data = localStorage.getItem(STORAGE_KEYS.USER_ANSWERS);
-  if (!data) return [];
+export async function getUserAnswers(userId:string) {
+  //const data = localStorage.getItem(STORAGE_KEYS.USER_ANSWERS);
+  try{
+    const res= await fetch(`/api/user-answers/user/${userId}`)
+    return res;
+  }catch(err){
+    console.log(err)
+    return [];
+  }
+  //if (!data) return [];
   
-  const answers = JSON.parse(data);
+  //const answers = JSON.parse(data);
   // Convert date strings back to Date objects
-  return answers.map((a: any) => ({
-    ...a,
-    answeredAt: new Date(a.answeredAt)
-  }));
+  //return answers.map((a: any) => ({
+   // ...a,
+   // answeredAt: new Date(a.answeredAt)
+  //}));
 }
 
 export function clearUserAnswers(): void {

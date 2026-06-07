@@ -82,7 +82,7 @@ export function getExercisesForDate(answers: UserAnswer[], targetDate: string): 
         type: answer.type,
         level: answer.level,
         answers: [],
-        completedAt: answer.answeredAt
+        completedAt: answer.answeredAt,
       });
     }
     

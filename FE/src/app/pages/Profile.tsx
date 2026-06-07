@@ -7,6 +7,9 @@ import {
 import { getUserAnswers } from '../utils/storage';
 import { calculateProgressStats } from '../utils/analytics';
 
+const userStr = localStorage.getItem('user');
+const userData = userStr ? JSON.parse(userStr) : null;
+const userId = userData ? userData.id : null;
 export function Profile() {
   const [stats, setStats] = useState({
     totalQuestions: 0,
@@ -26,9 +29,12 @@ export function Profile() {
   });
 
   useEffect(() => {
-    const answers = getUserAnswers();
+    const getAnswers=async ()=>{
+    const res= await getUserAnswers(userId);
+    
+    const answers = res.json();
     const total = answers.length;
-    const correct = answers.filter(a => a.isCorrect).length;
+    const correct = answers.filter((a: { isCorrect: any; }) => a.isCorrect).length;
     const accuracy = total > 0 ? (correct / total) * 100 : 0;
 
     setStats(prev => ({
@@ -37,6 +43,8 @@ export function Profile() {
       correctAnswers: correct,
       accuracy
     }));
+  }
+  getAnswers();
   }, []);
 
   const achievements = [
@@ -137,7 +145,7 @@ export function Profile() {
             </Link>
           </div>
 
-          
+
         </div>
       </div>
 
@@ -158,7 +166,7 @@ export function Profile() {
       </div>
 
       {/* Two column layout */}
-      
+
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Achievements */}
         <div className="lg:col-span-2">
@@ -176,11 +184,10 @@ export function Profile() {
               {achievements.map((achievement) => (
                 <div
                   key={achievement.id}
-                  className={`p-4 rounded-xl border-2 transition-all ${
-                    achievement.unlocked
+                  className={`p-4 rounded-xl border-2 transition-all ${achievement.unlocked
                       ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200'
                       : 'bg-gray-50 border-gray-200 opacity-60'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`text-3xl ${achievement.unlocked ? 'scale-110' : 'grayscale'}`}>
