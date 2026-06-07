@@ -27,7 +27,7 @@ export function Home() {
   useEffect(() => {
     const getAnswers= async ()=>{
     const res = await getUserAnswers(userId);
-    const answers=res.json();
+    const answers= await res.json();
     const progressStats = calculateProgressStats(answers);
     const total = answers.length;
     const correct = answers.filter((a: { isCorrect: any; }) => a.isCorrect).length;

@@ -32,7 +32,7 @@ export function Profile() {
     const getAnswers=async ()=>{
     const res= await getUserAnswers(userId);
     
-    const answers = res.json();
+    const answers = await res.json();
     const total = answers.length;
     const correct = answers.filter((a: { isCorrect: any; }) => a.isCorrect).length;
     const accuracy = total > 0 ? (correct / total) * 100 : 0;

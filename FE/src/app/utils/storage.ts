@@ -30,8 +30,8 @@ export async function getUserAnswers(userId:string) {
     const res= await fetch(`/api/user-answers/user/${userId}`)
     return res;
   }catch(err){
-    console.log(err)
-    return [];
+    console.log(err);
+    throw("lỗi getUserAnswers");
   }
   //if (!data) return [];
   
