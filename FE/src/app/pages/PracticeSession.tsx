@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, Clock, Flag } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Flag, Pause, Play } from 'lucide-react';
 import { Question, JLPTLevel, QuestionType, ExerciseProgress } from '../types';
 import { getQuestionsByType } from '../data/mockData';
 import { Exercise, getExerciseById, getExercisesQuestion } from '../data/exercises';
@@ -25,12 +25,48 @@ export function PracticeSession() {
   const userStr = localStorage.getItem('user');
   const userData = userStr ? JSON.parse(userStr) : null;
   const userId = userData ? userData.id : null;
+
+
+  //audio
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState('00:00');
+  const [duration, setDuration] = useState('00:00');
   const loadExercise = async () => {
     if (exerciseId) {
       const data = await getExerciseById(userId, exerciseId);
       setExercise(data);
     }
   };
+
+  //audio cho phần nghe
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+      setProgress((current / total) * 100 || 0);
+      setCurrentTime(formatTime(current));
+
+
+    }
+  };
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(formatTime(audioRef.current.duration));
+    }
+  };
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+    }
+  };
+
 
   useEffect(() => {
     loadExercise();
@@ -222,6 +258,36 @@ export function PracticeSession() {
         {/* Question */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <div className="mb-6">
+            <div className='flex justify-center'>
+              {currentQuestion.audioURL && (
+                <div className='w-[500px] mb-4'>
+                  <audio
+                  ref={audioRef}
+                  src={currentQuestion.audioURL}
+                  onEnded={() => setIsPlaying(false)}
+                  onPause={() => setIsPlaying(false)}
+                  onPlay={() => setIsPlaying(true)}
+                  onTimeUpdate={handleTimeUpdate}
+                  onLoadedMetadata={handleLoadedMetadata}
+                />
+              
+              <div className="flex items-center w-full gap-8 mb-8">
+                <span className="size-3.5">{currentTime.split('.')[0]}</span>
+                <div className="h-1 w-full rounded-[3px] overflow-hidden bg-gray-200 relative">
+                  <div className="h-full rounded-[3px] bg-amber-700" style={{ width: `${progress}%` }}></div>
+                </div>
+                <span className="size-3.5">{duration.split('.')[0]}</span>
+              </div>
+              <div className='flex gap-20 items-center justify-center'>
+                <button className="bg-[#d32f2f] text-white border-0 w-[36px] h-[36px] rounded-full flex items-center justify-center cursor-pointer shadow-[0_4px_15px_rgba(211,47,47,0.3)] transition-transform duration-200 hover:scale-105" onClick={handlePlayPause}>
+                  {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
+                </button>
+              </div>
+                </div>)}
+                
+            </div>
+
+
             <div className='flex w-full  justify-center'>{currentQuestion.imageURL && (<img src={currentQuestion.imageURL} alt='Ảnh JLPT' />)}</div>
 
             {currentQuestion.readingContent && (<p className='text-xl mb-8'>{currentQuestion.readingContent}</p>)}
