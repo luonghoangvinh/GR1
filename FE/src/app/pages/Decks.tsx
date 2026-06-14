@@ -103,7 +103,7 @@ export function Decks() {
   
   const handleDeleteDeck = async (deckId: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa bộ thẻ này?')) {
-      deleteDeck(deckId);
+      await deleteDeck(deckId);
       await loadDecks();
     }
   };

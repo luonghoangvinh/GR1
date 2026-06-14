@@ -96,11 +96,11 @@ else return false;
 
 // Delete deck
 export async function deleteDeck(id: string): Promise<boolean> {
-  const decks:Deck[] = await getDecks();
-  const filtered = decks.filter(deck => deck._id !== id);
-  if (filtered.length === decks.length) return false;
-  saveDecks(filtered);
+  const res=await fetch(`/api/decks/${id}`,{method:"DELETE"})
+  const data= await res.ok;
+  if(data)
   return true;
+else return false;
 }
 
 // Duplicate deck
@@ -163,6 +163,7 @@ export async function updateCard(deckId: string, cardId: string, updates: Partia
 
 // Delete card from deck
 export async function deleteCard(deckId: string, cardId: string): Promise<boolean> {
+  
   const decks:Deck[] = await getDecks();
   const deckIndex = decks.findIndex(d => d._id === deckId);
   if (deckIndex === -1) return false;

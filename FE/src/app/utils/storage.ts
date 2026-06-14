@@ -50,7 +50,7 @@ export function clearUserAnswers(): void {
 // Custom decks storage
 export function saveCustomDeck(deck: Deck): void {
   const decks = getCustomDecks();
-  const existingIndex = decks.findIndex(d => d.id === deck.id);
+  const existingIndex = decks.findIndex(d => d._id === deck._id);
   
   if (existingIndex >= 0) {
     decks[existingIndex] = deck;
@@ -75,7 +75,7 @@ export function getCustomDecks(): Deck[] {
 
 export function deleteCustomDeck(deckId: string): void {
   const decks = getCustomDecks();
-  const filtered = decks.filter(d => d.id !== deckId);
+  const filtered = decks.filter(d => d._id !== deckId);
   localStorage.setItem(STORAGE_KEYS.CUSTOM_DECKS, JSON.stringify(filtered));
 }
 
