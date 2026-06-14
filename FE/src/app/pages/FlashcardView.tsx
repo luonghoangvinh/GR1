@@ -1,14 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Shuffle, Star } from 'lucide-react';
 import { Flashcard } from '../components/Flashcard';
-import { getDeckById } from '../data/mockData';
+import { getDeckById } from '../utils/deckStorage';
+import { Deck } from '../types';
+
 
 export function FlashcardView() {
   const { deckId } = useParams<{ deckId: string }>();
-  const deck = getDeckById(deckId || '');
+  const [deck, setDeck] = useState<Deck>();
+  const [loading, setLoading] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  
+  useEffect(() => {
+    const getDeck = async () => {
+      try {
+        const deckData = await getDeckById(deckId || '');
+        setDeck(deckData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getDeck();
+  }, [deckId]);
+
+  if (loading) {
+    return <div>Đang tải...</div>;
+  }
+
   if (!deck) {
     return (
       <div className="text-center py-12">
@@ -20,27 +39,27 @@ export function FlashcardView() {
       </div>
     );
   }
-  
   const currentCard = deck.cards[currentCardIndex];
-  
+
   const handleNext = () => {
     if (currentCardIndex < deck.cards.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
     }
   };
-  
+
   const handlePrevious = () => {
     if (currentCardIndex > 0) {
       setCurrentCardIndex(currentCardIndex - 1);
     }
   };
-  
+
   const handleShuffle = () => {
     const randomIndex = Math.floor(Math.random() * deck.cards.length);
     setCurrentCardIndex(randomIndex);
   };
-  
+
   return (
+
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -56,7 +75,7 @@ export function FlashcardView() {
             <p className="text-sm text-gray-600 mt-1">{deck.description}</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <button
             onClick={handleShuffle}
@@ -71,7 +90,7 @@ export function FlashcardView() {
           </button>
         </div>
       </div>
-      
+
       {/* Flashcard */}
       <div className="py-8">
         <Flashcard
@@ -82,7 +101,7 @@ export function FlashcardView() {
           onPrevious={handlePrevious}
         />
       </div>
-      
+
       {/* Study options */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Tùy chọn học tập</h3>

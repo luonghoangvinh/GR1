@@ -70,7 +70,7 @@ export function DeckModal({ isOpen, onClose, onSave, deck, mode }: DeckModalProp
 
   const handleDeleteCard = (cardId: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa thẻ này?')) {
-      setCards(cards.filter(c => c.id !== cardId));
+      setCards(cards.filter(c => c._id !== cardId));
     }
   };
 
@@ -82,7 +82,7 @@ export function DeckModal({ isOpen, onClose, onSave, deck, mode }: DeckModalProp
       };
       setCards([...cards, newCard]);
     } else if (editingCard) {
-      setCards(cards.map(c => c.id === editingCard.id ? { ...cardData, id: c.id } : c));
+      setCards(cards.map(c => c._id === editingCard._id ? { ...cardData, id: c._id } : c));
     }
     setIsCardModalOpen(false);
   };
@@ -299,9 +299,9 @@ export function DeckModal({ isOpen, onClose, onSave, deck, mode }: DeckModalProp
             </div>
           ) : (
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {cards.map((card) => (
+              {cards.map((card,index) => (
                 <div
-                  key={card.id}
+                  key={card._id?? index}
                   className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -335,7 +335,7 @@ export function DeckModal({ isOpen, onClose, onSave, deck, mode }: DeckModalProp
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeleteCard(card?.id??"")}
+                        onClick={() => handleDeleteCard(card?._id??"")}
                         className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
                         title="Xóa"
                       >

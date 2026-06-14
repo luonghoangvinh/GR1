@@ -58,6 +58,13 @@ export async function createDeck(name: string, description: string, cards:Flashc
 
 // Update deck
 export async function updateDeck(id: string, updates: Partial<Deck>): Promise<boolean> {
+  updates.cards=updates.cards?.map(c=>{
+    if(c._id) {
+      const {_id,...card}=c;
+      return card;
+    }
+    else return c;
+})
   const res= await fetch(`/api/decks/${id}`,{
     method: "PATCH",
     headers:{
@@ -73,7 +80,7 @@ else return false;
 // Delete deck
 export async function deleteDeck(id: string): Promise<boolean> {
   const res=await fetch(`/api/decks/${id}`,{method:"DELETE"})
-  const data= await res.ok;
+  const data=res.ok;
   if(data)
   return true;
 else return false;
@@ -113,13 +120,13 @@ export async function updateCard(deckId: string, cardId: string, updates: Partia
   const deckIndex = decks.findIndex(d => d._id === deckId);
   if (deckIndex === -1) return false;
 
-  const cardIndex = decks[deckIndex].cards.findIndex(c => c.id === cardId);
+  const cardIndex = decks[deckIndex].cards.findIndex(c => c._id === cardId);
   if (cardIndex === -1) return false;
 
   decks[deckIndex].cards[cardIndex] = {
     ...decks[deckIndex].cards[cardIndex],
     ...updates,
-    id: cardId // Preserve ID
+    _id: cardId // Preserve ID
   };
 
   saveDecks(decks);
@@ -134,7 +141,7 @@ export async function deleteCard(deckId: string, cardId: string): Promise<boolea
   if (deckIndex === -1) return false;
 
   const originalLength = decks[deckIndex].cards.length;
-  decks[deckIndex].cards = decks[deckIndex].cards.filter(c => c.id !== cardId);
+  decks[deckIndex].cards = decks[deckIndex].cards.filter(c => c._id !== cardId);
 
   if (decks[deckIndex].cards.length === originalLength) return false;
 
@@ -148,7 +155,7 @@ export async function duplicateCard(deckId: string, cardId: string): Promise<boo
   const deck = await getDeckById(deckId);
   if (!deck) return false;
 
-  const card = deck.cards.find((c:Flashcard) => c.id === cardId);
+  const card = deck.cards.find((c:Flashcard) => c._id === cardId);
   if (!card) return false;
 
   const newCard: Flashcard = {
