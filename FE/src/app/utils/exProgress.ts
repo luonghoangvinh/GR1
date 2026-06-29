@@ -1,8 +1,9 @@
 import { ExerciseProgress } from "../types";
 
+const API_URL = import.meta.env.VITE_API_URL;
 export default async function createNewExProgress(exerciseProgress: ExerciseProgress) {
     try {
-        const response = await fetch('/api/exercise-progress', {
+        const response = await fetch(`${API_URL}/exercise-progress`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -24,7 +25,7 @@ export default async function createNewExProgress(exerciseProgress: ExerciseProg
 
 export async function updateExProgress(exerciseProgressId: string, exerciseProgress: ExerciseProgress) {
     try {
-        const response = await fetch(`/api/exercise-progress/${exerciseProgressId}`, {
+        const response = await fetch(`${API_URL}/exercise-progress/${exerciseProgressId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

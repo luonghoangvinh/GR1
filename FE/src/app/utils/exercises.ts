@@ -1,6 +1,6 @@
 
 import { JLPTLevel, Question, QuestionType } from '../types';
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 export interface Exercise {
   _id: string;
@@ -27,7 +27,7 @@ export const generateExercises = (): Exercise[] => {
 
 
 export async function getExercises() {
-  const res = await fetch('/api/exercises');
+  const res = await fetch(`${API_URL}/exercises`);
   return res.json();
 }
 
@@ -46,7 +46,7 @@ function getTypeName(type: QuestionType): string {
 export function getExercisesByTypeAndLevel(userId: string, type: QuestionType, level: JLPTLevel){
   const getExercises = async (type: QuestionType, level: JLPTLevel) => {
     try {
-      const exercises = await fetch(`/api/exercises/findBy?userId=${userId}&type=${type}&level=${level}`);
+      const exercises = await fetch(`${API_URL}/exercises/findBy?userId=${userId}&type=${type}&level=${level}`);
       const data: Exercise[] = await exercises.json();
       return data;
     } catch (error) {
@@ -61,7 +61,7 @@ export function getExercisesByTypeAndLevel(userId: string, type: QuestionType, l
 
 export async function getExerciseById(userId: string, id: string): Promise<Exercise | undefined> {
   try{
-    const exercise = await fetch(`/api/exercises/ByUserIandId?id=${id}&userId=${userId}`);
+    const exercise = await fetch(`${API_URL}/exercises/ByUserIandId?id=${id}&userId=${userId}`);
     const data: Exercise = await exercise.json();
     return data;
   } catch (error) {
@@ -72,7 +72,7 @@ export async function getExerciseById(userId: string, id: string): Promise<Exerc
 
 export async function getExercisesQuestion(exerciseId: string): Promise<Question[]> {
   try{
-    const res= await fetch(`/api/exercises/${exerciseId}/questions`);
+    const res= await fetch(`${API_URL}/exercises/${exerciseId}/questions`);
     const data: Question[] = await res.json();
     return data;
   } catch (error) {

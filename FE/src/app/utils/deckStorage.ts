@@ -1,13 +1,10 @@
 import { Deck, Flashcard } from '../types';
-
+const API_URL = import.meta.env.VITE_API_URL;
 const DECKS_STORAGE_KEY = 'jlpt_decks';
-const userStr = localStorage.getItem('user');
-const userData = userStr ? JSON.parse(userStr) : null;
-//const userId = userData ? userData.id : null;
 // Get all decks
 export async function getDecks(id:string){
   try{
-    const res =await fetch(`/api/decks/user/${id}`)
+    const res =await fetch(`${API_URL}/decks/user/${id}`)
     const data=await res.json()
     return data;
   } catch(err){
@@ -17,7 +14,7 @@ export async function getDecks(id:string){
 
 // Get deck by ID
 export async function getDeckById(id: string) {
-  const deckData = await fetch(`/api/decks/${id}`);
+  const deckData = await fetch(`${API_URL}/decks/${id}`);
   const deck = await deckData.json();
   return deck;
 }
@@ -48,7 +45,7 @@ export async function createDeck(userId:string,name: string, description: string
     }
     else return c;
 })
-    const res = await fetch("/api/decks",{
+    const res = await fetch(`${API_URL}/decks`,{
     method:"POST",
     headers:{
       "Content-Type": "application/json"
@@ -72,7 +69,7 @@ export async function updateDeck(id: string, updates: Partial<Deck>): Promise<bo
     }
     else return c;
 })
-  const res= await fetch(`/api/decks/${id}`,{
+  const res= await fetch(`${API_URL}/decks/${id}`,{
     method: "PATCH",
     headers:{
       "Content-Type": "application/json"
@@ -86,7 +83,7 @@ else return false;
 
 // Delete deck
 export async function deleteDeck(id: string): Promise<boolean> {
-  const res=await fetch(`/api/decks/${id}`,{method:"DELETE"})
+  const res=await fetch(`${API_URL}/decks/${id}`,{method:"DELETE"})
   const data=res.ok;
   if(data)
   return true;
@@ -95,7 +92,7 @@ else return false;
 
 // Duplicate deck
 export async function duplicateDeck(id: string): Promise<Deck | null> {
-  const res= await fetch(`/api/decks/${id}/duplicate`,{
+  const res= await fetch(`${API_URL}/decks/${id}/duplicate`,{
     method:'POST',
     headers:{
       "Content-Type":"application/json"

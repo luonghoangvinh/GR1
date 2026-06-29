@@ -5,10 +5,12 @@ const STORAGE_KEYS = {
   CUSTOM_DECKS: 'jlpt_custom_decks',
   SAVED_CARDS: 'jlpt_saved_cards'
 };
+
+const API_URL = import.meta.env.VITE_API_URL;
 // User answers storage
 export async function saveUserAnswer(answer: UserAnswer) {
   try{
-    const data= await fetch("/api/user-answers",{
+    const data= await fetch(`${API_URL}/user-answers`,{
       method:"POST",
       headers: {
         'Content-Type': 'application/json'
@@ -23,7 +25,7 @@ export async function saveUserAnswer(answer: UserAnswer) {
 
 export async function getUserAnswers(userId:string) {
   try{
-    const res= await fetch(`/api/user-answers/user/${userId}`)
+    const res= await fetch(`${API_URL}/user-answers/user/${userId}`)
     return res;
   }catch(err){
     console.log(err);
@@ -32,7 +34,7 @@ export async function getUserAnswers(userId:string) {
 }
 
 export async function getUserStats(userId: string){
-  const res= await fetch(`/api/users/${userId}`);
+  const res= await fetch(`${API_URL}/users/${userId}`);
   const userData=await res.json();
 
   return [userData.point,userData.streak];

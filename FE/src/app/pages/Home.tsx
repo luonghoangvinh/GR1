@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Target, Zap, Trophy, Clock, Award, BookOpen, Brain, Headphones, FileText, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getUserAnswers, getUserStats } from '../utils/storage';
