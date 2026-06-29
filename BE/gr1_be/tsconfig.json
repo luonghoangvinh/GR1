@@ -12,10 +12,10 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
     "sourceMap": true,
-    "outDir": "./",
+    "outDir": "./dist",
 
     "types": ["jest", "node"],
-    "rootDir": "./src",
+    "rootDir": "./",
     
     "incremental": true,
     "skipLibCheck": true,
