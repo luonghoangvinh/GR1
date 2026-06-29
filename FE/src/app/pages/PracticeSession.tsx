@@ -267,6 +267,10 @@ export function PracticeSession() {
         {/* Question */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <div className="mb-6">
+            
+
+            <div className='flex w-full  justify-center'>{currentQuestion.imageURL && (<img src={currentQuestion.imageURL} alt='Ảnh JLPT' />)}</div>
+            
             <div className='flex justify-center'>
               {currentQuestion.audioURL && (
                 <div className='w-[500px] mb-4'>
@@ -295,10 +299,6 @@ export function PracticeSession() {
                 </div>)}
                 
             </div>
-
-
-            <div className='flex w-full  justify-center'>{currentQuestion.imageURL && (<img src={currentQuestion.imageURL} alt='Ảnh JLPT' />)}</div>
-
             {currentQuestion.readingContent && (<p className='text-xl mb-8'>{currentQuestion.readingContent}</p>)}
             <div className="flex items-center gap-2 mb-3">
 
